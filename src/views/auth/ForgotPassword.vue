@@ -112,6 +112,7 @@
 import { defineComponent, ref } from "vue";
 import Input from "@/components/ui/Input.vue";
 import PrimaryButton from "@/components/ui/PrimaryButton.vue";
+import { useAuth } from "@/composables/useAuth";
 
 export default defineComponent({
   name: "ForgotPassword",
@@ -124,6 +125,7 @@ export default defineComponent({
     const error = ref("");
     const isLoading = ref(false);
     const isSuccess = ref(false);
+    const { sendPasswordResetEmail } = useAuth();
 
     const validateEmail = (email: string) => {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -144,11 +146,10 @@ export default defineComponent({
 
       isLoading.value = true;
       try {
-        // TODO: Implement your password reset logic here
-        await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulated API call
+        await sendPasswordResetEmail(email.value);
         isSuccess.value = true;
-      } catch (err) {
-        error.value = "Failed to send reset instructions. Please try again.";
+      } catch (err: any) {
+        error.value = err.message || "Failed to send reset instructions. Please try again.";
       } finally {
         isLoading.value = false;
       }
@@ -157,10 +158,9 @@ export default defineComponent({
     const handleResend = async () => {
       isLoading.value = true;
       try {
-        // TODO: Implement resend logic here
-        await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulated API call
-      } catch (err) {
-        error.value = "Failed to resend. Please try again.";
+        await sendPasswordResetEmail(email.value);
+      } catch (err: any) {
+        error.value = err.message || "Failed to resend. Please try again.";
       } finally {
         isLoading.value = false;
       }
