@@ -2,19 +2,7 @@
   <button
     :type="type"
     :disabled="disabled || loading"
-    class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-    :style="{
-      backgroundColor: '#242427',
-      '&:hover': {
-        backgroundColor: '#363639',
-      },
-      '&:focus': {
-        outline: 'none',
-        '--tw-ring': '2px',
-        '--tw-ring-offset': '2px',
-        '--tw-ring-color': '#242427',
-      },
-    }"
+    class="primary-button w-full cursor-pointer flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
   >
     <span v-if="loading">
       <svg
@@ -68,4 +56,21 @@ export default defineComponent({
     }
   }
 });
-</script> 
+</script>
+
+<style scoped>
+.primary-button {
+  background-color: var(--color-primary);
+}
+
+.primary-button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.primary-button:focus {
+  outline: none;
+  --tw-ring: 2px;
+  --tw-ring-offset: 2px;
+  --tw-ring-color: var(--color-primary);
+}
+</style> 
