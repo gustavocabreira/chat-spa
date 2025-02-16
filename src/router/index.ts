@@ -6,7 +6,9 @@ import Login from '@/views/auth/Login.vue';
 import ForgotPassword from '@/views/auth/ForgotPassword.vue';
 import NotFound from '@/views/NotFound.vue';
 import TermsOfService from '@/components/TermsOfService.vue';
-import PrivacyPolicy from '@/components/PrivacyPolicy.vue'; 
+import PrivacyPolicy from '@/components/PrivacyPolicy.vue';
+import Chat from '@/views/Chat.vue';
+import Profile from '@/views/Profile.vue';
 
 const routes = [
   {
@@ -35,6 +37,11 @@ const routes = [
     ],
   },
   {
+    path: '/chat',
+    name: 'Chat',
+    component: Chat,
+  },
+  {
     path: '/terms',
     name: 'terms',
     component: TermsOfService,
@@ -43,6 +50,12 @@ const routes = [
     path: '/privacy',
     name: 'privacy',
     component: PrivacyPolicy,
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
+    meta: { requiresAuth: true }
   },
   {
     path: '/:pathMatch(.*)*',
