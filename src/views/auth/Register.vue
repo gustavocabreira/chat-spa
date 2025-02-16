@@ -200,118 +200,79 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuth } from "@/composables/useAuth";
+import { useForm } from "@/composables/useForm";
 import Input from "@/components/ui/Input.vue";
 import SocialButton from "@/components/ui/SocialButton.vue";
 import PrimaryButton from "@/components/ui/PrimaryButton.vue";
+import type { RegisterFormData } from "@/types/auth";
 
-export default defineComponent({
-  name: "Register",
-  components: {
-    Input,
-    SocialButton,
-    PrimaryButton,
+const router = useRouter();
+const { registerWithEmail, loginWithGoogle, loginWithGithub } = useAuth();
+
+// Form initial state
+const initialFormData: RegisterFormData = {
+  name: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+  acceptTerms: false,
+};
+
+// Form validation rules
+const validationRules = {
+  name: (value: string) => !!value.trim() || "Name is required",
+  email: (value: string) => {
+    if (!value.trim()) return "Email is required";
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || "Please enter a valid email";
   },
-  setup() {
-    const formData = ref({
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      acceptTerms: false,
-    });
+  password: (value: string) => {
+    if (!value) return "Password is required";
+    return value.length >= 8 || "Password must be at least 8 characters";
+  },
+  confirmPassword: (value: string, formData: RegisterFormData) =>
+    value === formData.password || "Passwords do not match",
+  acceptTerms: (value: boolean) =>
+    value || "You must accept the Terms of Service and Privacy Policy",
+};
 
-    const errors = ref({
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      acceptTerms: "",
-    });
-
-    const isLoading = ref(false);
-
-    const validateForm = () => {
-      errors.value = {
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        acceptTerms: "",
-      };
-
-      let isValid = true;
-
-      if (!formData.value.name.trim()) {
-        errors.value.name = "Name is required";
-        isValid = false;
+// Use custom form composable
+const { formData, errors, isLoading, validateForm, handleSubmit } = useForm({
+  initialData: initialFormData,
+  validationRules,
+  onSubmit: async (data) => {
+    try {
+      await registerWithEmail(data);
+      router.push({ name: "Login" });
+    } catch (error) {
+      if (error instanceof Error) {
+        errors.value.email = error.message;
       }
-
-      if (!formData.value.email.trim()) {
-        errors.value.email = "Email is required";
-        isValid = false;
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.value.email)) {
-        errors.value.email = "Please enter a valid email";
-        isValid = false;
-      }
-
-      if (!formData.value.password) {
-        errors.value.password = "Password is required";
-        isValid = false;
-      } else if (formData.value.password.length < 8) {
-        errors.value.password = "Password must be at least 8 characters";
-        isValid = false;
-      }
-
-      if (formData.value.password !== formData.value.confirmPassword) {
-        errors.value.confirmPassword = "Passwords do not match";
-        isValid = false;
-      }
-
-      if (!formData.value.acceptTerms) {
-        errors.value.acceptTerms =
-          "You must accept the Terms of Service and Privacy Policy";
-        isValid = false;
-      }
-
-      return isValid;
-    };
-
-    const handleSubmit = async () => {
-      if (!validateForm()) return;
-
-      isLoading.value = true;
-      try {
-        // TODO: Implement your registration logic here
-        await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulated API call
-      } catch (error) {
-        console.error("Registration failed:", error);
-      } finally {
-        isLoading.value = false;
-      }
-    };
-
-    const handleGoogleLogin = () => {
-      // TODO: Implement Google login
-      console.log("Google login clicked");
-    };
-
-    const handleGithubLogin = () => {
-      // TODO: Implement GitHub login
-      console.log("GitHub login clicked");
-    };
-
-    return {
-      formData,
-      errors,
-      isLoading,
-      handleSubmit,
-      handleGoogleLogin,
-      handleGithubLogin,
-    };
+    }
   },
 });
+
+// Social login handlers
+const handleGoogleLogin = async () => {
+  try {
+    await loginWithGoogle();
+    router.push({ name: "Chat" });
+  } catch (error) {
+    console.error("Google login failed:", error);
+  }
+};
+
+const handleGithubLogin = async () => {
+  try {
+    await loginWithGithub();
+    router.push({ name: "Chat" });
+  } catch (error) {
+    console.error("GitHub login failed:", error);
+  }
+};
 </script>
 
 <style scoped>
