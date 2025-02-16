@@ -1,5 +1,7 @@
 <template>
-  <div class="w-full sm:w-[400px] px-4 sm:px-0 mx-auto min-h-screen flex items-center justify-center flex-col gap-6">
+  <div
+    class="w-full sm:w-[400px] px-4 sm:px-0 mx-auto min-h-screen flex items-center justify-center flex-col gap-6"
+  >
     <a
       href="/"
       class="flex items-center gap-2 self-center text-xl font-semibold text-gray-900 hover:opacity-90 transition-opacity"
@@ -26,7 +28,9 @@
         >QuickChat</span
       >
     </a>
-    <div class="bg-white w-full px-4 sm:px-6 py-6 shadow-md rounded-lg border border-gray-200">
+    <div
+      class="bg-white w-full px-4 sm:px-6 py-6 shadow-md rounded-lg border border-gray-200"
+    >
       <div class="mb-6">
         <h1 class="text-xl font-bold tracking-tight text-gray-900">Create an account</h1>
         <p class="mt-1.5 text-sm text-gray-500">Get started with QuickChat</p>
@@ -144,26 +148,26 @@
               <div class="ml-3 text-sm">
                 <label for="terms" class="font-medium text-gray-700">
                   I agree to the
-                  <a
-                    href="/terms"
+                  <RouterLink
+                    :to="{ name: 'terms' }"
                     style="
                       color: #242427;
                       &:hover {
                         opacity: 0.9;
                       }
                     "
-                    >Terms of Service</a
+                    >Terms of Service</RouterLink
                   >
                   and
-                  <a
-                    href="/privacy"
+                  <RouterLink
+                    :to="{ name: 'privacy' }"
                     style="
                       color: #242427;
                       &:hover {
                         opacity: 0.9;
                       }
                     "
-                    >Privacy Policy</a
+                    >Privacy Policy</RouterLink
                   >
                 </label>
                 <p v-if="errors.acceptTerms" class="mt-1 text-sm text-red-600">
@@ -172,7 +176,7 @@
               </div>
             </div>
           </div>
-          <PrimaryButton 
+          <PrimaryButton
             type="submit"
             :loading="isLoading"
             loading-text="Creating account..."

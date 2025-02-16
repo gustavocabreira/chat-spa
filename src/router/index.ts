@@ -5,6 +5,8 @@ import Register from '@/views/auth/Register.vue';
 import Login from '@/views/auth/Login.vue';
 import ForgotPassword from '@/views/auth/ForgotPassword.vue';
 import NotFound from '@/views/NotFound.vue';
+import TermsOfService from '@/components/TermsOfService.vue';
+import PrivacyPolicy from '@/components/PrivacyPolicy.vue'; 
 
 const routes = [
   {
@@ -31,6 +33,16 @@ const routes = [
         component: ForgotPassword,
       },
     ],
+  },
+  {
+    path: '/terms',
+    name: 'terms',
+    component: TermsOfService,
+  },
+  {
+    path: '/privacy',
+    name: 'privacy',
+    component: PrivacyPolicy,
   },
   {
     path: '/:pathMatch(.*)*',
