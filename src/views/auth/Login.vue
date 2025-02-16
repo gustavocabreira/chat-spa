@@ -155,91 +155,69 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script setup lang="ts">
+import { useRouter } from "vue-router";
+import { useAuth } from "@/composables/useAuth";
+import { useForm } from "@/composables/useForm";
 import Input from "@/components/ui/Input.vue";
 import SocialButton from "@/components/ui/SocialButton.vue";
 import PrimaryButton from "@/components/ui/PrimaryButton.vue";
+import type { LoginFormData } from "@/types/auth";
 
-export default defineComponent({
-  name: "Login",
-  components: {
-    Input,
-    SocialButton,
-    PrimaryButton,
+const router = useRouter();
+const { loginWithEmail, loginWithGoogle, loginWithGithub } = useAuth();
+
+// Form initial state
+const initialFormData: LoginFormData = {
+  email: "",
+  password: "",
+  rememberMe: false,
+};
+
+// Form validation rules
+const validationRules = {
+  email: (value: string) => {
+    if (!value.trim()) return "Email is required";
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || "Please enter a valid email";
   },
-  setup() {
-    const formData = ref({
-      email: "",
-      password: "",
-      rememberMe: false,
-    });
+  password: (value: string) => value.trim() || "Password is required",
+  rememberMe: () => true, // Optional field, no validation needed
+};
 
-    const errors = ref({
-      email: "",
-      password: "",
-    });
-
-    const isLoading = ref(false);
-
-    const validateForm = () => {
-      errors.value = {
-        email: "",
-        password: "",
-      };
-
-      let isValid = true;
-
-      if (!formData.value.email.trim()) {
-        errors.value.email = "Email is required";
-        isValid = false;
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.value.email)) {
-        errors.value.email = "Please enter a valid email";
-        isValid = false;
+// Use custom form composable
+const { formData, errors, isLoading, handleSubmit } = useForm({
+  initialData: initialFormData,
+  validationRules,
+  onSubmit: async (data) => {
+    try {
+      await loginWithEmail(data);
+      router.push({ name: "Chat" });
+    } catch (error) {
+      if (error instanceof Error) {
+        errors.value.email = error.message;
       }
-
-      if (!formData.value.password) {
-        errors.value.password = "Password is required";
-        isValid = false;
-      }
-
-      return isValid;
-    };
-
-    const handleSubmit = async () => {
-      if (!validateForm()) return;
-
-      isLoading.value = true;
-      try {
-        // TODO: Implement your login logic here
-        await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulated API call
-      } catch (error) {
-        console.error("Login failed:", error);
-      } finally {
-        isLoading.value = false;
-      }
-    };
-
-    const handleGoogleLogin = () => {
-      // TODO: Implement Google login
-      console.log("Google login clicked");
-    };
-
-    const handleGithubLogin = () => {
-      // TODO: Implement GitHub login
-      console.log("GitHub login clicked");
-    };
-
-    return {
-      formData,
-      errors,
-      isLoading,
-      handleSubmit,
-      handleGoogleLogin,
-      handleGithubLogin,
-    };
+    }
   },
 });
+
+// Social login handlers
+const handleGoogleLogin = async () => {
+  try {
+    await loginWithGoogle();
+    router.push({ name: "Chat" });
+  } catch (error) {
+    console.error("Google login failed:", error);
+  }
+};
+
+const handleGithubLogin = async () => {
+  try {
+    await loginWithGithub();
+    router.push({ name: "Chat" });
+  } catch (error) {
+    console.error("GitHub login failed:", error);
+  }
+};
 </script>
 
 <style scoped>
